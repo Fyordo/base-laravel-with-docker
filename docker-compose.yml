@@ -1,0 +1,48 @@
+version: '3'
+
+networks:
+  internal:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.220.0/28
+
+services:
+  db:
+    image: postgres
+    restart: always
+    networks:
+      - internal
+    environment:
+      - POSTGRES_DB=${DB_DATABASE}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./docker/postgres/datadir:/var/lib/postgresql/data
+
+  php-fpm:
+    build:
+      context: docker/php-fpm
+    volumes:
+      - ./src:/var/www
+    environment:
+      XDEBUG_CONFIG: "remote_host=192.168.220.1 remote_enable=1"
+      PHP_IDE_CONFIG: "serverName=Docker"
+    depends_on:
+      - db
+    networks:
+      - internal
+
+  nginx:
+    build:
+      context: docker/nginx
+    volumes:
+      - ./src:/var/www/
+      - ./src/storage/app/public/:/var/www/public/storage/
+    ports:
+      - 8081:80
+    depends_on:
+      - php-fpm
+    networks:
+      - internal
