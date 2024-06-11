@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 networks:
   internal:
@@ -19,11 +19,11 @@ services:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
-      - ./docker/postgres/datadir:/var/lib/postgresql/data
+      - ./.docker/postgres/datadir:/var/lib/postgresql/data
 
   php-fpm:
     build:
-      context: docker/php-fpm
+      context: .docker/php-fpm
     volumes:
       - ./src:/var/www
     environment:
@@ -36,7 +36,7 @@ services:
 
   nginx:
     build:
-      context: docker/nginx
+      context: .docker/nginx
     volumes:
       - ./src:/var/www/
       - ./src/storage/app/public/:/var/www/public/storage/
