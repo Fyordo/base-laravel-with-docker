@@ -10,6 +10,7 @@ networks:
 
 services:
   db:
+    container_name: ${APP_NAME}-db
     image: postgres
     restart: always
     networks:
@@ -22,6 +23,7 @@ services:
       - ./.docker/postgres/datadir:/var/lib/postgresql/data
 
   php-fpm:
+    container_name: ${APP_NAME}-php-fpm
     build:
       context: .docker/php-fpm
     volumes:
@@ -35,6 +37,7 @@ services:
       - internal
 
   nginx:
+    container_name: ${APP_NAME}-nginx
     build:
       context: .docker/nginx
     volumes:
